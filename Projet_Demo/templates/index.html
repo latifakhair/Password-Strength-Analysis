@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ADIA Project Demo: Password Strength Analysis</title>
+    <style>
+        /* Global Styles & Dark Theme Setup */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; padding: 20px; 
+            background-color: #1c1f26; /* Dark background */
+            color: #e0e0e0; /* Light text */
+            font-size: 1.1em; /* INCREASED general font size */
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 50px auto; 
+            background: #282c34; /* Slightly lighter inner panel */
+            padding: 40px; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+        }
+        h1 { text-align: center; color: #61afef; margin-bottom: 10px; font-weight: 300; }
+        p.subtitle { text-align: center; color: #a0a0a0; margin-bottom: 40px; }
+
+        /* Input and Progress Bar */
+        .input-group { margin-bottom: 30px; }
+        input[type="text"] { 
+            width: 100%; padding: 18px; 
+            border: 2px solid #5c6370; 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-size: 20px; 
+            background-color: #1e2127; 
+            color: #ffffff; 
+            transition: border-color 0.3s; 
+        }
+        input[type="text"]:focus { border-color: #61afef; outline: none; }
+
+        /* Result Display */
+        .result { 
+            padding: 25px; 
+            border-radius: 8px; 
+            text-align: left; 
+            transition: all 0.5s ease; 
+            min-height: 100px;
+        }
+        .result-label { font-size: 2.5em; font-weight: 600; margin-bottom: 15px; } /* INCREASED size */
+        .metrics { font-size: 1.1em; color: #b0b0b0; } /* INCREASED size */
+        .metrics p { margin: 8px 0; }
+
+        /* Color Feedback */
+        .initial { background-color: #3e4451; color: #e0e0e0; } 
+        .weak { background-color: #3e4451; color: #d93025; border-left: 5px solid #d93025; } 
+        .medium { background-color: #3e4451; color: #f9ab00; border-left: 5px solid #f9ab00; } 
+        .strong { background-color: #3e4451; color: #1e8e3e; border-left: 5px solid #1e8e3e; } 
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Password Strength Testing Tool 🛡️</h1>
+    <p class="subtitle">Evaluate your credentials using our Random Forest Model trained on millions of real-world passwords.</p>
+
+    <div class="input-group">
+        <input type="text" id="passwordInput" placeholder="Enter your password here..." onkeyup="checkStrength()">
+    </div>
+
+    <div id="resultContainer" class="result initial">
+        <div class="result-label">Password Strength:</div>
+        <p>Start typing to analyze...</p>
+    </div>
+    
+    <div style="text-align: center; margin-top: 40px; font-size: 0.9em; color: #5c6370;">
+        <p>Model based on Feature Engineering of Shannon Entropy, Character Classes, and Common Patterns.</p>
+    </div>
+</div>
+
+<script>
+    function checkStrength() {
+        const password = document.getElementById('passwordInput').value;
+        const resultContainer = document.getElementById('resultContainer');
+        
+        if (password.length === 0) {
+            resultContainer.className = 'result initial';
+            resultContainer.innerHTML = '<div class="result-label">Password Strength:</div><p>Start typing to analyze...</p>';
+            return;
+        }
+
+        // Use Fetch API to send the request to the Flask API
+        fetch('/predict_strength', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ password: password })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                resultContainer.className = 'result weak';
+                resultContainer.innerHTML = `<div class="result-label">Error:</div><p>${data.error}</p>`;
+                return;
+            }
+
+            // Determine the class based on prediction
+            let strengthClass = 'initial';
+            if (data.strength.includes('Weak')) {
+                strengthClass = 'weak';
+            } else if (data.strength.includes('Medium')) {
+                strengthClass = 'medium';
+            } else if (data.strength.includes('Strong')) {
+                strengthClass = 'strong';
+            }
+
+            resultContainer.className = `result ${strengthClass}`;
+            resultContainer.innerHTML = `
+                <div class="result-label">${data.strength}</div>
+                <div class="metrics">
+                    <p>Metrics Used:</p>
+                    <p>• Shannon Entropy: <strong>${data.entropy} bits</strong> (Threshold 60bits)</p>
+                    <p>• Character Classes: <strong>${data.classes}/4</strong></p>
+                </div>
+            `;
+        })
+        .catch(error => {
+            console.error('Error during fetch:', error);
+            resultContainer.className = 'result weak';
+            resultContainer.innerHTML = '<div class="result-label">Connection Error:</div><p>Cannot reach the model API.</p>';
+        });
+    }
+</script>
+
+</body>
+</html>
