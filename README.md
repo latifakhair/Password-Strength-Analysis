@@ -1,3 +1,7 @@
+
+
+https://github.com/user-attachments/assets/93bf4a25-63b1-4c5b-9237-a0e267cef762
+
 🛡️ Password Strength Analysis: Data-Driven Weakness Detection Model
 
 This project applies **Data Analysis and Machine Learning (Random Forest Classifier)** to solve the critical cybersecurity problem of weak passwords.
@@ -18,3 +22,7 @@ Using $\mathbf{14}$ million compromised credentials from the **RockYou.txt Datas
 * - `Notebooks/`: Jupyter Notebook containing all data cleaning, feature engineering, and model training.
 * - `Data/`: Source and labeled feature datasets.
 * `Projet_Demo/`: Complete source code for the live web demonstration
+
+
+https://github.com/user-attachments/assets/05fc2ad4-7e11-4be1-8856-0d35846a5435
+
