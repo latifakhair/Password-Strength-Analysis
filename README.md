@@ -16,8 +16,8 @@ Using $\mathbf{14}$ million compromised credentials from the **RockYou.txt Datas
 
 ## ⚙️ Project Structure
 
-* - `Notebooks/`: Jupyter Notebook containing all data cleaning, feature engineering, and model training.
-* - `Data/`: Source and labeled feature datasets.
+* `Notebooks/`: Jupyter Notebook containing all data cleaning, feature engineering, and model training.
+* `Data/`: Source and labeled feature datasets.
 * `Projet_Demo/`: Complete source code for the live web demonstration
 
 
